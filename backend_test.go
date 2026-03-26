@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+// TestMathBackends verifies the functionality of both SpeedCrunch and Go backends.
 func TestMathBackends(t *testing.T) {
 	config := &Config{
 		Backend: BackendSpeedCrunch,
@@ -96,6 +97,7 @@ func TestMathBackends(t *testing.T) {
 	}
 }
 
+// TestBackendSwitching verifies that switching between backends works correctly.
 func TestBackendSwitching(t *testing.T) {
 	config := &Config{
 		Backend: BackendSpeedCrunch,

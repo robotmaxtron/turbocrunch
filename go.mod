@@ -1,4 +1,4 @@
-module turbocrunch
+module github.com/robotmaxtron/turbocrunch
 
 go 1.26.1
 

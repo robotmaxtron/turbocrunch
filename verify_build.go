@@ -1,3 +1,4 @@
+// Package main provides a build verification tool for the TurboCrunch project.
 package main
 
 import (

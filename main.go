@@ -1,3 +1,4 @@
+// Package main provides a TUI calculator called TurboCrunch with dual backends: SpeedCrunch and Go.
 package main
 
 import (
@@ -17,6 +18,7 @@ func main() {
 	}
 }
 
+// model represents the state of the TUI application.
 type model struct {
 	textInput textinput.Model
 	err       error
@@ -25,6 +27,7 @@ type model struct {
 	history   []string
 }
 
+// initialModel initializes the model with default values.
 func initialModel() model {
 	ti := textinput.New()
 	ti.Placeholder = "Enter expression..."
@@ -42,10 +45,12 @@ func initialModel() model {
 	}
 }
 
+// Init initializes the text input blinking command.
 func (m model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
+// Update handles incoming messages and updates the model's state.
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -96,6 +101,7 @@ var (
 			Foreground(lipgloss.Color("240"))
 )
 
+// View renders the application's user interface.
 func (m model) View() string {
 	backend := "SpeedCrunch (Arbitrary Precision)"
 	if m.config.Backend == BackendGo {

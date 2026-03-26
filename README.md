@@ -2,6 +2,8 @@
 
 TurboCrunch is a high-performance terminal-based calculator (TUI) that leverages the powerful SpeedCrunch evaluation engine. It features a dual-backend system, allowing users to switch between the robust SpeedCrunch C++ engine and a native Go math backend.
 
+**Note**: This project is a fork of the [SpeedCrunch](https://github.com/speedcrunch/SpeedCrunch) project, adapted for TUI use.
+
 ## Features
 
 - **TUI Interface**: A clean, efficient terminal user interface for quick calculations.
@@ -30,10 +32,11 @@ TurboCrunch is a high-performance terminal-based calculator (TUI) that leverages
 
 The project uses a `Makefile` to manage the C++ bridge and Go compilation.
 
-1.  **Clone the repository**:
+1.  **Clone the repository and initialize submodules**:
     ```bash
-    git clone https://github.com/example/turbocrunch.git
+    git clone https://github.com/robotmaxtron/turbocrunch.git
     cd turbocrunch
+    git submodule update --init --recursive
     ```
 
 2.  **Ensure Qt 5 is in your path** (especially on macOS):
@@ -60,6 +63,15 @@ Once built, you can run the application directly:
 ./turbocrunch
 ```
 
+## Releases
+
+To package the application for release:
+
+1.  Ensure you have all dependencies installed for your platform.
+2.  Run `make clean && make` to ensure a fresh build.
+3.  The `turbocrunch` binary is a self-contained executable.
+4.  Distribute the `turbocrunch` binary along with any necessary dynamic libraries or instructions to install Qt5.
+
 ## Testing
 
 To verify the backend functionality:
@@ -70,7 +82,7 @@ go test -v backend_test.go math_wrapper.go
 
 ## Project Structure
 
-- `SpeedCrunch/`: Submodule/Directory containing the SpeedCrunch source code.
+- `SpeedCrunch/`: Git submodule containing the SpeedCrunch source code.
 - `bridge/`: C++ bridge to interface Go with the SpeedCrunch core.
 - `main.go`: TUI implementation and entry point.
 - `math_wrapper.go`: Go-side wrapper for backend management and the Go math backend.

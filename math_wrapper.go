@@ -7,25 +7,31 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"turbocrunch/bridge"
+	"github.com/robotmaxtron/turbocrunch/bridge"
 )
 
+// MathBackend defines the type of backend used for calculations.
 type MathBackend int
 
 const (
+	// BackendSpeedCrunch is the backend that uses the SpeedCrunch core for arbitrary precision calculations.
 	BackendSpeedCrunch MathBackend = iota
+	// BackendGo is the backend that uses the Go math and cmplx packages for high-performance calculations.
 	BackendGo
 )
 
+// Config represents the configuration for the evaluator.
 type Config struct {
 	Backend MathBackend
 }
 
+// EvaluatorWrapper is a high-level wrapper that coordinates between different backends.
 type EvaluatorWrapper struct {
 	scEvaluator *bridge.Evaluator
 	config      *Config
 }
 
+// NewEvaluatorWrapper creates a new instance of EvaluatorWrapper with the provided configuration.
 func NewEvaluatorWrapper(config *Config) *EvaluatorWrapper {
 	return &EvaluatorWrapper{
 		scEvaluator: bridge.NewEvaluator(),
@@ -33,6 +39,7 @@ func NewEvaluatorWrapper(config *Config) *EvaluatorWrapper {
 	}
 }
 
+// Evaluate takes a mathematical expression and returns the result as a string using the selected backend.
 func (e *EvaluatorWrapper) Evaluate(expr string) string {
 	if e.config.Backend == BackendSpeedCrunch {
 		return e.scEvaluator.Evaluate(expr)
