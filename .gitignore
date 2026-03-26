@@ -8,6 +8,7 @@ libbridge.a
 *.o
 moc_*.cpp
 build/
+verify_build.go
 
 # Environment variables
 .env
