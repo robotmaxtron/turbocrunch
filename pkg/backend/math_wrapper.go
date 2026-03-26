@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
 	"github.com/robotmaxtron/turbocrunch/pkg/bridge"
 )
 
@@ -57,7 +58,7 @@ func (e *EvaluatorWrapper) Evaluate(expr string) string {
 // A full parser would be overkill for this task, but we'll support basic complex ops.
 func (e *EvaluatorWrapper) evaluateGo(expr string) string {
 	expr = strings.ReplaceAll(expr, " ", "")
-	
+
 	// Support (3+4i)*(1-i) specifically for the test
 	if expr == "(3+4i)*(1-i)" {
 		return formatComplex((3 + 4i) * (1 - 1i))
@@ -66,16 +67,16 @@ func (e *EvaluatorWrapper) evaluateGo(expr string) string {
 	// Handle simple cases like sin(1+2j)
 	reFunc := regexp.MustCompile(`^([a-z]+)\((.*)\)$`)
 	matches := reFunc.FindStringSubmatch(expr)
-	
+
 	if len(matches) == 3 {
 		funcName := matches[1]
 		argStr := matches[2]
-		
+
 		// Very basic handle for pi/4 inside functions
 		if argStr == "pi/4" {
 			argStr = fmt.Sprintf("%v", math.Pi/4)
 		}
-		
+
 		arg, err := parseComplex(argStr)
 		if err != nil {
 			return "Error: " + err.Error()
@@ -157,7 +158,7 @@ func parseComplex(s string) (complex128, error) {
 			return complex(0, v), nil
 		}
 	}
-	
+
 	// Standard Go complex parser
 	return strconv.ParseComplex(s, 128)
 }
