@@ -4,11 +4,15 @@
 
 # Build artifacts
 /turbocrunch
+/turbocrunch_test
 libbridge.a
 *.o
 moc_*.cpp
 build/
 verify_build.go
+
+# Runtime state
+session.json
 
 # Environment variables
 .env

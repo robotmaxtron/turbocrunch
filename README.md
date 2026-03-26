@@ -31,17 +31,17 @@ TurboCrunch uses several [Bubble Tea](https://github.com/charmbracelet/bubbletea
 
 ### Key Bindings
 
-| Key | Action |
-|-----|--------|
-| `Enter` | Evaluate expression |
+| Key      | Action                                 |
+|----------|----------------------------------------|
+| `Enter`  | Evaluate expression                    |
 | `Ctrl+T` | Toggle Math Backend (SpeedCrunch / Go) |
-| `Ctrl+A` | Toggle Angle Mode (Rad / Deg / Grad) |
-| `Ctrl+F` | Open Formula Book |
-| `Ctrl+C` | Browse Physical Constants |
-| `Ctrl+U` | Browse Units |
-| `Ctrl+H` | Toggle History View / Input Focus |
-| `Ctrl+Q` | Quit Application |
-| `?` | Toggle Help Menu |
+| `Ctrl+A` | Toggle Angle Mode (Rad / Deg / Grad)   |
+| `Ctrl+F` | Open Formula Book                      |
+| `Ctrl+C` | Browse Physical Constants              |
+| `Ctrl+U` | Browse Units                           |
+| `Ctrl+H` | Toggle History View / Input Focus      |
+| `Ctrl+Q` | Quit Application                       |
+| `?`      | Toggle Help Menu                       |
 
 ## Math Backends
 

@@ -92,6 +92,7 @@ const (
 	viewFormulaBook
 	viewConstants
 	viewUnits
+	viewHistory
 )
 
 // keyMap defines a set of keybindings. To display help and screen prompts, use the `help` bubble.
@@ -106,6 +107,7 @@ type keyMap struct {
 	FormulaBook   key.Binding
 	Constants     key.Binding
 	Units         key.Binding
+	History       key.Binding
 	Back          key.Binding
 }
 
@@ -165,6 +167,10 @@ var keys = keyMap{
 	Units: key.NewBinding(
 		key.WithKeys("u", "ctrl+u"),
 		key.WithHelp("u", "units"),
+	),
+	History: key.NewBinding(
+		key.WithKeys("ctrl+h"),
+		key.WithHelp("ctrl+h", "history"),
 	),
 	Back: key.NewBinding(
 		key.WithKeys("esc", "f", "ctrl+f"),
@@ -363,6 +369,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.view == viewUnits {
 			return m.updateUnits(msg)
 		}
+		if m.view == viewHistory {
+			return m.updateHistory(msg)
+		}
 		return m.updateInput(msg)
 
 	case evaluationResultMsg:
@@ -455,6 +464,11 @@ func (m model) updateInput(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.view = viewUnits
 				return m, nil
 			}
+
+		case key.Matches(keyMsg, m.keys.History):
+			m.view = viewHistory
+			m.table.Focus()
+			return m, nil
 
 		case key.Matches(keyMsg, m.keys.Enter):
 			expr := m.textInput.Value()
@@ -553,6 +567,31 @@ func (m model) updateUnits(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
+func (m model) updateHistory(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if keyMsg, ok := msg.(tea.KeyMsg); ok {
+		if key.Matches(keyMsg, m.keys.Back) || key.Matches(keyMsg, m.keys.History) || keyMsg.String() == "esc" {
+			m.view = viewInput
+			m.table.Blur()
+			m.textInput.Focus()
+			return m, nil
+		}
+		if key.Matches(keyMsg, m.keys.Enter) {
+			row := m.table.SelectedRow()
+			if len(row) > 0 {
+				m.textInput.SetValue(row[0])
+			}
+			m.view = viewInput
+			m.table.Blur()
+			m.textInput.Focus()
+			return m, nil
+		}
+	}
+
+	var cmd tea.Cmd
+	m.table, cmd = m.table.Update(msg)
+	return m, cmd
+}
+
 var (
 	funcRegex   = regexp.MustCompile(`\b(` + strings.Join(scientificFunctions, "|") + `)\b`)
 	numberRegex = regexp.MustCompile(`\b\d+(\.\d*)?\b`)
@@ -568,6 +607,12 @@ func (m model) View() string {
 	}
 	if m.view == viewUnits {
 		return docStyle.Render(m.unitsList.View())
+	}
+	if m.view == viewHistory {
+		// In history view, we still show the table but it's focused
+		m.table.Focus()
+	} else {
+		m.table.Blur()
 	}
 
 	backendStr := "SpeedCrunch"
@@ -598,8 +643,13 @@ func (m model) View() string {
 	tableView := m.table.View()
 
 	// Apply focus highlighting
-	inputView = activeBorderStyle.Render(inputView)
-	tableView = inactiveBorderStyle.Render(tableView)
+	if m.view == viewHistory {
+		tableView = activeBorderStyle.Render(tableView)
+		inputView = inactiveBorderStyle.Render(inputView)
+	} else {
+		inputView = activeBorderStyle.Render(inputView)
+		tableView = inactiveBorderStyle.Render(tableView)
+	}
 
 	s := header + "\n\n"
 	s += tableView + "\n"

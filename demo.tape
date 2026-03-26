@@ -23,30 +23,37 @@ Type "ans * 3"
 Enter
 Sleep 1s
 
-# 2. Angle Mode Toggle
-# Sin(90) in Rad (default)
-Type "sin(90)"
+# 2. Angle Mode Toggle & Context Usage
+# Define a variable for context
+Type "a = 90"
+Enter
+Sleep 500ms
+# Sin(a) in Rad (default)
+Type "sin(a)"
 Enter
 Sleep 500ms
 # Toggle to Deg (Ctrl+A)
 Ctrl+A
 Sleep 500ms
-Type "sin(90)"
+# Re-evaluate using ans or variable
+Type "sin(a)"
 Enter
 Sleep 1s
 
 # 3. Formula Book (Ctrl+F)
+# First define needed variables
+Type "r=5"
+Enter
+Sleep 500ms
 Ctrl+F
 Sleep 1s
 Type "circle"
 Sleep 500ms
 Enter
 Sleep 500ms
-# Formula is inserted, evaluate it (might need variable values)
-# For simplicity, just browse and go back
-Type "r=5"
+# Formula pi * r^2 is inserted, evaluate it
 Enter
-Sleep 500ms
+Sleep 1s
 
 # 4. Constants (Ctrl+C)
 Ctrl+C
@@ -55,26 +62,37 @@ Type "speed of light"
 Sleep 500ms
 Enter
 Sleep 500ms
+# Constant is inserted, evaluate it
 Enter
 Sleep 1s
 
 # 5. Units (Ctrl+U)
+Type "100"
+Sleep 500ms
 Ctrl+U
 Sleep 1s
 Type "meter"
 Sleep 500ms
 Enter
 Sleep 500ms
+# Unit is inserted, evaluate it
 Enter
 Sleep 1s
 
 # 6. History Navigation (Ctrl+H)
 Ctrl+H
 Sleep 1s
-Down
+# Move up to 1+1 (it's at the top of history table)
+Up
 Sleep 500ms
-Down
+Up
 Sleep 500ms
+Up
+Sleep 500ms
+# Select it
+Enter
+Sleep 1s
+# Re-evaluate it
 Enter
 Sleep 1s
 
