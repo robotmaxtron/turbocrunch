@@ -1,0 +1,3 @@
+[submodule "SpeedCrunch"]
+	path = SpeedCrunch
+	url = git@github.com:robotmaxtron/SpeedCrunch.git
