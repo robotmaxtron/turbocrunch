@@ -100,7 +100,6 @@ TurboCrunch follows modern Go and C++ best practices to ensure performance and r
 - **Thread-Safe Bridge**: The C++ bridge uses dynamic allocation for result strings, paired with Go's `C.free`, to ensure thread safety and prevent memory leaks.
 - **Idiomatic Error Handling**: Methods in the evaluation chain return `(string, error)`, allowing for robust error propagation and user-friendly error messages in the TUI.
 - **Dual-Backend System**: The system can seamlessly switch between the SpeedCrunch engine and a native Go backend for flexibility.
-- **CI/CD**: A GitHub Actions workflow (`.github/workflows/ci.yml`) ensures that every commit is built and tested across multiple platforms (Ubuntu, macOS).
 
 ## Testing
 
