@@ -50,27 +50,30 @@ void evaluator_destroy(EvaluatorPtr p) {
     // Evaluator is a singleton in SpeedCrunch
 }
 
-const char* evaluator_evaluate(EvaluatorPtr p, const char* expression) {
+char* evaluator_evaluate(EvaluatorPtr p, const char* expression) {
     Evaluator* e = (Evaluator*)p;
     QString qexpr = QString::fromUtf8(expression);
     e->setExpression(qexpr);
     
     Quantity res = e->eval();
-    
     QString err = e->error();
     
-    static char result_buf[4096];
+    QString resultStr;
     if (err.isEmpty()) {
-        QString formatted = NumberFormatter::format(res);
-        formatted.replace(QChar(0x2212), '-');
-        if (formatted.isEmpty()) {
-             strncpy(result_buf, "Empty Result", sizeof(result_buf)-1);
-        } else {
-             strncpy(result_buf, formatted.toUtf8().constData(), sizeof(result_buf)-1);
+        resultStr = NumberFormatter::format(res);
+        resultStr.replace(QChar(0x2212), '-');
+        if (resultStr.isEmpty()) {
+             resultStr = "Empty Result";
         }
     } else {
-        strncpy(result_buf, (QString("Error: ") + err).toUtf8().constData(), sizeof(result_buf)-1);
+        resultStr = QString("Error: ") + err;
     }
-    result_buf[sizeof(result_buf)-1] = '\0';
-    return result_buf;
+
+    QByteArray bytes = resultStr.toUtf8();
+    char* result_ptr = (char*)malloc(bytes.size() + 1);
+    if (result_ptr) {
+        memcpy(result_ptr, bytes.constData(), bytes.size());
+        result_ptr[bytes.size()] = '\0';
+    }
+    return result_ptr;
 }

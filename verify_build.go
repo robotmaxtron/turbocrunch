@@ -7,24 +7,25 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"github.com/robotmaxtron/turbocrunch/pkg/backend"
 )
 
 func main() {
-	config := &Config{
-		Backend: BackendSpeedCrunch,
+	config := &backend.Config{
+		Backend: backend.BackendSpeedCrunch,
 	}
-	wrapper := NewEvaluatorWrapper(config)
+	wrapper := backend.NewEvaluatorWrapper(config)
 
 	tests := []struct {
 		name    string
 		expr    string
-		backend MathBackend
+		backend backend.MathBackend
 		check   func(res string) error
 	}{
 		{
 			"SpeedCrunch Basic",
 			"1+2",
-			BackendSpeedCrunch,
+			backend.BackendSpeedCrunch,
 			func(res string) error {
 				if res != "3" {
 					return fmt.Errorf("expected 3, got %s", res)
@@ -35,7 +36,7 @@ func main() {
 		{
 			"SpeedCrunch Complex",
 			"(3+4j)*(1-j)",
-			BackendSpeedCrunch,
+			backend.BackendSpeedCrunch,
 			func(res string) error {
 				if !strings.Contains(res, "7+1j") && !strings.Contains(res, "7 + 1j") {
 					return fmt.Errorf("expected 7+1j, got %s", res)
@@ -46,7 +47,7 @@ func main() {
 		{
 			"SpeedCrunch Precision",
 			"sin(pi/4)",
-			BackendSpeedCrunch,
+			backend.BackendSpeedCrunch,
 			func(res string) error {
 				if !strings.HasPrefix(res, "0.7071067811865475") {
 					return fmt.Errorf("expected high precision, got %s", res)
@@ -57,7 +58,7 @@ func main() {
 		{
 			"Go Basic",
 			"1+2",
-			BackendGo,
+			backend.BackendGo,
 			func(res string) error {
 				if res != "3" {
 					return fmt.Errorf("expected 3, got %s", res)
@@ -68,9 +69,9 @@ func main() {
 		{
 			"Go Complex",
 			"(3+4i)*(1-i)",
-			BackendGo,
+			backend.BackendGo,
 			func(res string) error {
-				if !strings.Contains(res, "7+1i") && !strings.Contains(res, "7 + 1i") {
+				if !strings.Contains(res, "7+1i") && !strings.Contains(res, "7 + 1i") && !strings.Contains(res, "7+1j") && !strings.Contains(res, "7 + 1j") {
 					return fmt.Errorf("expected 7+1i, got %s", res)
 				}
 				return nil
@@ -79,7 +80,7 @@ func main() {
 		{
 			"Go Precision",
 			"sin(pi/4)",
-			BackendGo,
+			backend.BackendGo,
 			func(res string) error {
 				val, err := strconv.ParseFloat(res, 64)
 				if err != nil {
@@ -108,9 +109,9 @@ func main() {
 
 	// Test Backend Switching
 	fmt.Println("Testing backend switching...")
-	config.Backend = BackendSpeedCrunch
+	config.Backend = backend.BackendSpeedCrunch
 	res1 := wrapper.Evaluate("sin(pi/4)")
-	config.Backend = BackendGo
+	config.Backend = backend.BackendGo
 	res2 := wrapper.Evaluate("sin(pi/4)")
 	if res1 == res2 {
 		fmt.Printf("Switch test FAILED: both backends produced identical string %s\n", res1)

@@ -59,13 +59,9 @@ SC_SOURCES := \
 MOC_SOURCES := moc_evaluator.cpp moc_functions.cpp moc_constants.cpp
 MOC_OBJS := moc_evaluator.o moc_functions.o moc_constants.o
 
-BRIDGE_SOURCES := bridge/bridge.cpp
-
+BRIDGE_SOURCES := pkg/bridge/bridge.cpp
 SC_OBJS := $(patsubst %.cpp,%.o,$(filter %.cpp,$(SC_SOURCES)))
 SC_OBJS += $(patsubst %.c,%.o,$(filter %.c,$(SC_SOURCES)))
-BRIDGE_OBJS := bridge/bridge.o
-
-LIB_NAME := libbridge.a
 
 all: turbocrunch
 
@@ -90,8 +86,14 @@ moc_units.cpp: $(SC_MATH_DIR)/units.h
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-turbocrunch: $(LIB_NAME) main.go math_wrapper.go
-	go build -o turbocrunch main.go math_wrapper.go
+turbocrunch: $(LIB_NAME) cmd/turbocrunch/main.go pkg/backend/math_wrapper.go
+	go build -o turbocrunch ./cmd/turbocrunch
+
+test: $(LIB_NAME)
+	go test ./pkg/backend ./cmd/turbocrunch
+
+lint:
+	go vet ./...
 
 clean:
-	rm -f $(SC_OBJS) $(MOC_OBJS) $(MOC_SOURCES) bridge/bridge.o $(LIB_NAME) turbocrunch
+	rm -f $(SC_OBJS) $(MOC_OBJS) $(MOC_SOURCES) pkg/bridge/bridge.o $(LIB_NAME) turbocrunch

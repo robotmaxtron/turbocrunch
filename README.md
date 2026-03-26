@@ -15,14 +15,15 @@ TurboCrunch is a high-performance terminal-based calculator (TUI) that leverages
 ## Prerequisites
 
 ### macOS
-- **Go**: Version 1.18 or later.
+- **Go**: Version 1.20 or later.
 - **Qt 5**: Required for the SpeedCrunch core.
   - Install via Homebrew: `brew install qt@5`
+  - Ensure it's linked: `brew link qt@5 --force`
 - **Compiler**: `clang` and `clang++` (included in Xcode Command Line Tools).
 - **pkg-config**: `brew install pkg-config`
 
 ### Ubuntu / Debian
-- **Go**: Version 1.18 or later.
+- **Go**: Version 1.20 or later.
 - **Qt 5**: Development libraries.
   - Install: `sudo apt-get install qtbase5-dev`
 - **Compiler**: `gcc` and `g++`.
@@ -72,21 +73,49 @@ To package the application for release:
 3.  The `turbocrunch` binary is a self-contained executable.
 4.  Distribute the `turbocrunch` binary along with any necessary dynamic libraries or instructions to install Qt5.
 
-## Testing
-
-To verify the backend functionality:
-
-```bash
-go test -v backend_test.go math_wrapper.go
-```
-
 ## Project Structure
 
-- `SpeedCrunch/`: Git submodule containing the SpeedCrunch source code.
-- `bridge/`: C++ bridge to interface Go with the SpeedCrunch core.
-- `main.go`: TUI implementation and entry point.
-- `math_wrapper.go`: Go-side wrapper for backend management and the Go math backend.
-- `Makefile`: Build automation.
+TurboCrunch uses a standard Go project layout:
+
+- `cmd/turbocrunch/`: The application entry point (`main.go`) and TUI-related logic.
+- `pkg/backend/`: High-level evaluator logic and dual-backend management (`math_wrapper.go`).
+- `pkg/bridge/`: The C++ bridge and CGo integration to interface with the SpeedCrunch core.
+- `SpeedCrunch/`: A Git submodule containing the original SpeedCrunch source code (see [Git Submodule](#git-submodule)).
+- `Makefile`: Automates the multi-stage build process for both C++ and Go.
+
+## Git Submodule
+
+The SpeedCrunch core is included as a Git submodule in the `SpeedCrunch/` directory.
+
+### Justification
+
+1.  **Upstream Compatibility**: Keeping the SpeedCrunch source as a submodule allows us to easily pull updates or security fixes from the original repository.
+2.  **Modular Architecture**: By keeping the core separate, we maintain a clear boundary between the terminal UI (TurboCrunch) and the heavy-duty math engine (SpeedCrunch).
+3.  **Build Integration**: The `Makefile` is configured to reach into the submodule and compile only the necessary core components (`evaluator`, `functions`, `math` library) without requiring the full SpeedCrunch Qt GUI build.
+
+## Best Practices & Architecture
+
+TurboCrunch follows modern Go and C++ best practices to ensure performance and reliability:
+
+- **Thread-Safe Bridge**: The C++ bridge uses dynamic allocation for result strings, paired with Go's `C.free`, to ensure thread safety and prevent memory leaks.
+- **Idiomatic Error Handling**: Methods in the evaluation chain return `(string, error)`, allowing for robust error propagation and user-friendly error messages in the TUI.
+- **Dual-Backend System**: The system can seamlessly switch between the SpeedCrunch engine and a native Go backend for flexibility.
+- **CI/CD**: A GitHub Actions workflow (`.github/workflows/ci.yml`) ensures that every commit is built and tested across multiple platforms (Ubuntu, macOS).
+
+## Testing
+
+To verify the functionality across all packages:
+
+```bash
+make test
+```
+
+Or run individual package tests:
+
+```bash
+go test ./pkg/backend
+go test ./cmd/turbocrunch
+```
 
 ## License
 

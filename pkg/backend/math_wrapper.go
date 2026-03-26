@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"github.com/robotmaxtron/turbocrunch/bridge"
+	"github.com/robotmaxtron/turbocrunch/pkg/bridge"
 )
 
 // MathBackend defines the type of backend used for calculations.
@@ -42,7 +42,11 @@ func NewEvaluatorWrapper(config *Config) *EvaluatorWrapper {
 // Evaluate takes a mathematical expression and returns the result as a string using the selected backend.
 func (e *EvaluatorWrapper) Evaluate(expr string) string {
 	if e.config.Backend == BackendSpeedCrunch {
-		return e.scEvaluator.Evaluate(expr)
+		res, err := e.scEvaluator.Evaluate(expr)
+		if err != nil {
+			return "Error: " + err.Error()
+		}
+		return res
 	}
 
 	return e.evaluateGo(expr)
