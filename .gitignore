@@ -1,0 +1,16 @@
+# IDEs and Editors
+.idea/
+.vscode/
+
+# Build artifacts
+turbocrunch
+libbridge.a
+*.o
+moc_*.cpp
+build/
+
+# Environment variables
+.env
+
+# Junie files
+.junie/
