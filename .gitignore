@@ -3,7 +3,7 @@
 .vscode/
 
 # Build artifacts
-turbocrunch
+/turbocrunch
 libbridge.a
 *.o
 moc_*.cpp
