@@ -87,3 +87,7 @@ go test -v backend_test.go math_wrapper.go
 - `main.go`: TUI implementation and entry point.
 - `math_wrapper.go`: Go-side wrapper for backend management and the Go math backend.
 - `Makefile`: Build automation.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
