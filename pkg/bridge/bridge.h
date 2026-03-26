@@ -16,6 +16,38 @@ void evaluator_destroy(EvaluatorPtr p);
  * If there is an error, it returns a string starting with "Error: ".
  */
 char* evaluator_evaluate(EvaluatorPtr p, const char* expression);
+char* evaluator_evaluate_update_ans(EvaluatorPtr p, const char* expression);
+
+void evaluator_set_angle_mode(char mode); // 'r', 'd', 'g'
+char evaluator_get_angle_mode();
+
+char* evaluator_get_variable(EvaluatorPtr p, const char* name);
+
+// Constants
+int evaluator_get_constants_count();
+char* evaluator_get_constant_name(int index);
+char* evaluator_get_constant_value(int index);
+char* evaluator_get_constant_category(int index);
+
+// Units
+int evaluator_get_units_count();
+char* evaluator_get_unit_name(int index);
+
+// Functions
+int evaluator_get_functions_count();
+char* evaluator_get_function_identifier(int index);
+char* evaluator_get_function_name(int index);
+char* evaluator_get_function_usage(int index);
+
+// User-Defined Functions
+int evaluator_get_user_functions_count(EvaluatorPtr p);
+char* evaluator_get_user_function_name(EvaluatorPtr p, int index);
+char* evaluator_get_user_function_args(EvaluatorPtr p, int index);
+char* evaluator_get_user_function_expression(EvaluatorPtr p, int index);
+void evaluator_unset_user_function(EvaluatorPtr p, const char* name);
+int evaluator_is_user_function_assign(EvaluatorPtr p);
+int evaluator_session_save(EvaluatorPtr p, const char* filename);
+int evaluator_session_load(EvaluatorPtr p, const char* filename);
 
 #ifdef __cplusplus
 }

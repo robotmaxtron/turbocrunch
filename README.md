@@ -2,15 +2,64 @@
 
 TurboCrunch is a high-performance terminal-based calculator (TUI) that leverages the powerful SpeedCrunch evaluation engine. It features a dual-backend system, allowing users to switch between the robust SpeedCrunch C++ engine and a native Go math backend.
 
+![TurboCrunch Demo](demo.gif)
+
 **Note**: This project is a fork of the [SpeedCrunch](https://github.com/speedcrunch/SpeedCrunch) project, adapted for TUI use.
 
 ## Features
 
 - **TUI Interface**: A clean, efficient terminal user interface for quick calculations.
 - **SpeedCrunch Backend**: Uses the battle-tested SpeedCrunch core for high-precision and complex math operations.
-- **Go Math Backend**: A lightweight alternative using Go's `math/cmplx` package.
+- **`ans` Variable**: Automatically stores and retrieves the last calculation result for use in subsequent expressions.
+- **Angle Modes**: Toggle between Radians, Degrees, and Gradians via `Ctrl+A`.
+- **User-Defined Functions**: Define and use custom functions like `f(x) = x^2` that persist across sessions.
+- **Formula Book, Constants & Units**: Searchable, interactive lists for common formulas (`Ctrl+F`), physical constants (`Ctrl+C`), and units (`Ctrl+U`).
+- **Interactive History**: Navigate, select, and re-evaluate previous expressions using a structured table view.
+- **Persistent Sessions**: Automatically saves and loads variables and custom functions to `session.json`.
+- **Go Math Backend**: A native Go implementation using `cockroachdb/apd` for arbitrary-precision decimal arithmetic (50-digit precision) and `math/cmplx` for complex numbers.
 - **Complex Number Support**: Native support for complex arithmetic in both backends.
-- **High Precision**: Maintains the high precision standards of SpeedCrunch for critical calculations.
+- **High Accuracy**: Maintains high precision standards with 50-digit decimal accuracy in the Go backend (including transcendental functions) and arbitrary precision in SpeedCrunch.
+
+## TUI Components & Keyboard Shortcuts
+
+TurboCrunch uses several [Bubble Tea](https://github.com/charmbracelet/bubbletea) components to provide a rich interactive experience:
+
+- **`bubbles/list`**: Used for the searchable Formula Book, Constants, and Units lists. Supports fuzzy filtering.
+- **`bubbles/table`**: Provides an interactive history view where you can navigate and select previous results.
+- **`bubbles/help`**: Dynamic, context-aware help menu (press `?` to toggle).
+- **`bubbles/spinner`**: Visual feedback during complex backend evaluations.
+
+### Key Bindings
+
+| Key | Action |
+|-----|--------|
+| `Enter` | Evaluate expression |
+| `Ctrl+T` | Toggle Math Backend (SpeedCrunch / Go) |
+| `Ctrl+A` | Toggle Angle Mode (Rad / Deg / Grad) |
+| `Ctrl+F` | Open Formula Book |
+| `Ctrl+C` | Browse Physical Constants |
+| `Ctrl+U` | Browse Units |
+| `Ctrl+H` | Toggle History View / Input Focus |
+| `Ctrl+Q` | Quit Application |
+| `?` | Toggle Help Menu |
+
+## Math Backends
+
+TurboCrunch features a dual-backend system, allowing you to switch between different calculation engines based on your needs. Use `Ctrl+T` in the TUI to toggle between them.
+
+### SpeedCrunch (Default)
+The SpeedCrunch backend uses the original C++ core. It is the most robust and mature engine, supporting a wide range of scientific functions, units, and constants with arbitrary precision.
+
+- **Strengths**: Extremely robust, supports advanced scientific functions, handles units and constants.
+- **Recommended for**: General scientific work, unit conversions, and when using the full range of SpeedCrunch features.
+
+### Go Backend
+The Go backend is a native implementation designed for high accuracy using decimal arithmetic. It uses the `cockroachdb/apd` library for real numbers (providing 50-digit precision) and falls back to `math/cmplx` for complex numbers and trigonometric functions.
+
+- **Strengths**: Native Go implementation, high-precision decimal arithmetic for real numbers (avoiding floating-point errors like `0.1 + 0.2`).
+- **Recommended for**: Financial or high-accuracy decimal calculations where floating-point binary representation errors must be avoided.
+
+---
 
 ## Prerequisites
 
@@ -115,6 +164,22 @@ Or run individual package tests:
 go test ./pkg/backend
 go test ./cmd/turbocrunch
 ```
+
+## Documentation
+
+The primary documentation for TurboCrunch is available in this `README.md`. To view it or any other markdown file in the terminal with formatting, you can use a tool like `glow`:
+
+```bash
+glow README.md
+```
+
+Alternatively, you can view the Go-specific documentation for the internal packages using `godoc`:
+
+```bash
+go install golang.org/x/tools/cmd/godoc@latest
+godoc -http=:6060
+```
+Then navigate to `http://localhost:6060/pkg/github.com/robotmaxtron/turbocrunch/`.
 
 ## License
 

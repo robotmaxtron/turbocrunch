@@ -65,8 +65,14 @@ SC_OBJS += $(patsubst %.c,%.o,$(filter %.c,$(SC_SOURCES)))
 
 all: turbocrunch
 
+LIB_NAME := libbridge.a
+BRIDGE_OBJS := pkg/bridge/bridge.o
+
 $(LIB_NAME): $(SC_OBJS) $(MOC_OBJS) $(BRIDGE_OBJS)
 	ar rcs $@ $^
+
+pkg/bridge/bridge.o: pkg/bridge/bridge.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 moc_evaluator.cpp: $(SC_CORE_DIR)/evaluator.h
 	$(MOC) $(QT_FLAGS) $< -o $@
