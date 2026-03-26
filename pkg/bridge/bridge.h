@@ -49,6 +49,15 @@ int evaluator_is_user_function_assign(EvaluatorPtr p);
 int evaluator_session_save(EvaluatorPtr p, const char* filename);
 int evaluator_session_load(EvaluatorPtr p, const char* filename);
 
+// Variables
+int evaluator_get_variables_count(EvaluatorPtr p);
+char* evaluator_get_variable_name(EvaluatorPtr p, int index);
+char* evaluator_get_variable_value(EvaluatorPtr p, int index);
+void evaluator_unset_variable(EvaluatorPtr p, const char* name);
+
+void evaluator_set_result_format(char format); // 'd', 'h', 'b', 'o'
+char evaluator_get_result_format();
+
 #ifdef __cplusplus
 }
 #endif

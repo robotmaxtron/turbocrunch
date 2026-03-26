@@ -11,10 +11,14 @@ TurboCrunch is a high-performance terminal-based calculator (TUI) that leverages
 - **TUI Interface**: A clean, efficient terminal user interface for quick calculations.
 - **SpeedCrunch Backend**: Uses the battle-tested SpeedCrunch core for high-precision and complex math operations.
 - **`ans` Variable**: Automatically stores and retrieves the last calculation result for use in subsequent expressions.
-- **Angle Modes**: Toggle between Radians, Degrees, and Gradians via `Ctrl+A`.
-- **User-Defined Functions**: Define and use custom functions like `f(x) = x^2` that persist across sessions.
-- **Formula Book, Constants & Units**: Searchable, interactive lists for common formulas (`Ctrl+F`), physical constants (`Ctrl+C`), and units (`Ctrl+U`).
-- **Interactive History**: Navigate, select, and re-evaluate previous expressions using a structured table view.
+- **Angle Modes**: Toggle between Radians, Degrees, and Gradians.
+- **Result Format Cycling**: Cycle through Decimal, Hexadecimal, Binary, and Octal output formats via `Ctrl+F`.
+- **User-Defined Functions**: Define and use custom functions like `f(x) = x^2` or `area(w; h) = w * h` that persist across sessions.
+- **Formula Book, Browser & Variables**: Searchable, interactive screens for common formulas (`Ctrl+B`), physical constants/units/functions (`Ctrl+U`), and user-defined variables (`Ctrl+V`).
+- **Predictive Filtering**: Quickly narrow down items in any browser screen using `/`.
+- **Tab Completion**: Intelligent autocompletion for constants, units, and functions in the main input.
+- **Theme Support**: Multiple built-in themes (Dracula, Nord, Solarized Dark, Miami) toggleable via `Ctrl+N`.
+- **Interactive History**: Navigate and re-evaluate previous expressions using the `Up`/`Down` keys.
 - **Persistent Sessions**: Automatically saves and loads variables and custom functions to `session.json`.
 - **Go Math Backend**: A native Go implementation using `cockroachdb/apd` for arbitrary-precision decimal arithmetic (50-digit precision) and `math/cmplx` for complex numbers.
 - **Complex Number Support**: Native support for complex arithmetic in both backends.
@@ -26,22 +30,25 @@ TurboCrunch uses several [Bubble Tea](https://github.com/charmbracelet/bubbletea
 
 - **`bubbles/list`**: Used for the searchable Formula Book, Constants, and Units lists. Supports fuzzy filtering.
 - **`bubbles/table`**: Provides an interactive history view where you can navigate and select previous results.
-- **`bubbles/help`**: Dynamic, context-aware help menu (press `?` to toggle).
+- **`bubbles/help`**: Dynamic, context-aware help menu (press `?` or `Ctrl+H` to toggle).
 - **`bubbles/spinner`**: Visual feedback during complex backend evaluations.
 
 ### Key Bindings
 
-| Key      | Action                                 |
-|----------|----------------------------------------|
-| `Enter`  | Evaluate expression                    |
-| `Ctrl+T` | Toggle Math Backend (SpeedCrunch / Go) |
-| `Ctrl+A` | Toggle Angle Mode (Rad / Deg / Grad)   |
-| `Ctrl+F` | Open Formula Book                      |
-| `Ctrl+C` | Browse Physical Constants              |
-| `Ctrl+U` | Browse Units                           |
-| `Ctrl+H` | Toggle History View / Input Focus      |
-| `Ctrl+Q` | Quit Application                       |
-| `?`      | Toggle Help Menu                       |
+| Key      | Action                                     |
+|----------|--------------------------------------------|
+| `Enter`  | Evaluate expression / Insert selection     |
+| `Ctrl+T` | Toggle Math Backend (SpeedCrunch / Go)     |
+| `Ctrl+F` | Cycle Result Format (Dec/Hex/Bin/Oct)      |
+| `Ctrl+B` | Open Formula Book                          |
+| `Ctrl+U` | Open Browser (Constants, Units, Functions) |
+| `Ctrl+V` | Open Variables & User Functions            |
+| `Tab`    | Autocomplete / Switch Browser Category     |
+| `/`      | Filter Browser/Formula/Variable lists      |
+| `Ctrl+N` | Cycle Themes                               |
+| `Ctrl+L` | Clear History                              |
+| `Ctrl+C` | Quit Application                           |
+| `?`      | Toggle Help Menu                           |
 
 ## Math Backends
 

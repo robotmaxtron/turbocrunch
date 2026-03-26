@@ -42,6 +42,10 @@ static void initialize_speedcrunch() {
     Evaluator* e = Evaluator::instance();
     e->reset(); // This calls initializeBuiltInVariables()
     e->initializeAngleUnits();
+
+    // Add 'light' and its alias 'c' as built-in variables
+    e->setVariable(QStringLiteral("light"), Units::speed_of_light(), Variable::BuiltIn);
+    e->setVariable(QStringLiteral("c"), Units::speed_of_light(), Variable::BuiltIn);
 }
 
 EvaluatorPtr evaluator_init() {
@@ -291,6 +295,45 @@ int evaluator_session_load(EvaluatorPtr p, const char* filename) {
     
     // After loading, we might need to re-initialize built-in variables
     e->initializeBuiltInVariables();
+    e->setVariable(QStringLiteral("light"), Units::speed_of_light(), Variable::BuiltIn);
+    e->setVariable(QStringLiteral("c"), Units::speed_of_light(), Variable::BuiltIn);
     
     return 1;
+}
+
+int evaluator_get_variables_count(EvaluatorPtr p) {
+    Evaluator* e = (Evaluator*)p;
+    return e->getUserDefinedVariables().count();
+}
+
+char* evaluator_get_variable_name(EvaluatorPtr p, int index) {
+    Evaluator* e = (Evaluator*)p;
+    QList<Variable> list = e->getUserDefinedVariables();
+    if (index >= 0 && index < list.count()) {
+        return qstring_to_char(list[index].identifier());
+    }
+    return nullptr;
+}
+
+char* evaluator_get_variable_value(EvaluatorPtr p, int index) {
+    Evaluator* e = (Evaluator*)p;
+    QList<Variable> list = e->getUserDefinedVariables();
+    if (index >= 0 && index < list.count()) {
+        QString val = DMath::format(list[index].value());
+        return qstring_to_char(val);
+    }
+    return nullptr;
+}
+
+void evaluator_unset_variable(EvaluatorPtr p, const char* name) {
+    Evaluator* e = (Evaluator*)p;
+    e->unsetVariable(QString::fromUtf8(name));
+}
+
+void evaluator_set_result_format(char format) {
+    Settings::instance()->resultFormat = format;
+}
+
+char evaluator_get_result_format() {
+    return Settings::instance()->resultFormat;
 }

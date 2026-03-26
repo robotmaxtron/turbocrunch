@@ -58,6 +58,14 @@ func GetAngleMode() byte {
 	return byte(C.evaluator_get_angle_mode())
 }
 
+func SetResultFormat(format byte) {
+	C.evaluator_set_result_format(C.char(format))
+}
+
+func GetResultFormat() byte {
+	return byte(C.evaluator_get_result_format())
+}
+
 func (e *Evaluator) GetVariable(name string) (string, bool) {
 	cname := C.CString(name)
 	defer C.free(unsafe.Pointer(cname))
@@ -230,4 +238,38 @@ func (e *Evaluator) LoadSession(filename string) error {
 		return errors.New("failed to load session")
 	}
 	return nil
+}
+
+type Variable struct {
+	Name  string
+	Value string
+}
+
+func (e *Evaluator) GetVariables() []Variable {
+	count := int(C.evaluator_get_variables_count(e.ptr))
+	variables := make([]Variable, 0, count)
+	for i := 0; i < count; i++ {
+		cname := C.evaluator_get_variable_name(e.ptr, C.int(i))
+		cvalue := C.evaluator_get_variable_value(e.ptr, C.int(i))
+
+		if cname != nil && cvalue != nil {
+			variables = append(variables, Variable{
+				Name:  C.GoString(cname),
+				Value: C.GoString(cvalue),
+			})
+		}
+		if cname != nil {
+			C.free(unsafe.Pointer(cname))
+		}
+		if cvalue != nil {
+			C.free(unsafe.Pointer(cvalue))
+		}
+	}
+	return variables
+}
+
+func (e *Evaluator) UnsetVariable(name string) {
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	C.evaluator_unset_variable(e.ptr, cname)
 }

@@ -3,8 +3,6 @@ package backend
 import (
 	"fmt"
 	"math"
-	"math/cmplx"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -22,16 +20,199 @@ const (
 	BackendGo
 )
 
+// Theme defines the color scheme for the TUI.
+type Theme struct {
+	Name            string
+	Function        string
+	Number          string
+	Result          string
+	TitleBG         string
+	TitleFG         string
+	History         string
+	HelpKey         string
+	HelpDesc        string
+	HelpSeparator   string
+	ActiveBorder    string
+	InactiveBorder  string
+	ActiveTitleBG   string
+	ActiveTitleFG   string
+	InactiveTitleBG string
+	InactiveTitleFG string
+	Background      string
+	Cursor          string
+	Bracket         string
+	Operator        string
+	Nested          string
+}
+
 // Config represents the configuration for the evaluator.
 type Config struct {
 	Backend MathBackend
+	Theme   Theme
 }
+
+var (
+	// Dracula theme
+	Dracula = Theme{
+		Name:            "Dracula",
+		Function:        "#ff79c6", // Pink
+		Number:          "#bd93f9", // Purple
+		Result:          "#50fa7b", // Green
+		TitleBG:         "#6272a4", // Comment
+		TitleFG:         "#f8f8f2", // Foreground
+		History:         "#6272a4", // Comment
+		HelpKey:         "#ffb86c", // Orange
+		HelpDesc:        "#6272a4", // Comment
+		HelpSeparator:   "#44475a", // Current Line
+		ActiveBorder:    "#bd93f9", // Purple
+		InactiveBorder:  "#44475a", // Current Line
+		ActiveTitleBG:   "#bd93f9", // Purple
+		ActiveTitleFG:   "#282a36", // Background
+		InactiveTitleBG: "#44475a", // Current Line
+		InactiveTitleFG: "#6272a4", // Comment
+		Background:      "#282a36",
+		Cursor:          "#ff79c6",
+		Bracket:         "#f8f8f2", // Foreground
+		Operator:        "#8be9fd", // Cyan
+		Nested:          "#ffb86c", // Orange
+	}
+
+	// Nord theme
+	Nord = Theme{
+		Name:            "Nord",
+		Function:        "#81a1c1", // Frost 3
+		Number:          "#b48ead", // Aurora 5
+		Result:          "#a3be8c", // Aurora 4
+		TitleBG:         "#4c566a", // Polar Night 4
+		TitleFG:         "#eceff4", // Snow Storm 3
+		History:         "#4c566a", // Polar Night 4
+		HelpKey:         "#ebcb8b", // Aurora 3
+		HelpDesc:        "#4c566a", // Polar Night 4
+		HelpSeparator:   "#3b4252", // Polar Night 2
+		ActiveBorder:    "#88c0d0", // Frost 2
+		InactiveBorder:  "#3b4252", // Polar Night 2
+		ActiveTitleBG:   "#88c0d0", // Frost 2
+		ActiveTitleFG:   "#2e3440", // Polar Night 1
+		InactiveTitleBG: "#3b4252", // Polar Night 2
+		InactiveTitleFG: "#4c566a", // Polar Night 4
+		Background:      "#2e3440",
+		Cursor:          "#88c0d0",
+		Bracket:         "#d8dee9", // Snow Storm 1
+		Operator:        "#81a1c1", // Frost 3
+		Nested:          "#ebcb8b", // Aurora 3
+	}
+
+	// SolarizedDark theme
+	SolarizedDark = Theme{
+		Name:            "Solarized Dark",
+		Function:        "#268bd2", // Blue
+		Number:          "#d33682", // Magenta
+		Result:          "#859900", // Green
+		TitleBG:         "#073642", // Base 02
+		TitleFG:         "#93a1a1", // Base 1
+		History:         "#586e75", // Base 01
+		HelpKey:         "#b58900", // Yellow
+		HelpDesc:        "#586e75", // Base 01
+		HelpSeparator:   "#073642", // Base 02
+		ActiveBorder:    "#268bd2", // Blue
+		InactiveBorder:  "#073642", // Base 02
+		ActiveTitleBG:   "#268bd2", // Blue
+		ActiveTitleFG:   "#002b36", // Base 03
+		InactiveTitleBG: "#073642", // Base 02
+		InactiveTitleFG: "#586e75", // Base 01
+		Background:      "#002b36",
+		Cursor:          "#268bd2",
+		Bracket:         "#839496", // Base 0
+		Operator:        "#2aa198", // Cyan
+		Nested:          "#cb4b16", // Orange
+	}
+
+	// DefaultTheme (based on original styles)
+	DefaultTheme = Theme{
+		Name:            "Default",
+		Function:        "39",
+		Number:          "214",
+		Result:          "42",
+		TitleBG:         "62",
+		TitleFG:         "230",
+		History:         "240",
+		HelpKey:         "220",
+		HelpDesc:        "241",
+		HelpSeparator:   "238",
+		ActiveBorder:    "62",
+		InactiveBorder:  "240",
+		ActiveTitleBG:   "62",
+		ActiveTitleFG:   "230",
+		InactiveTitleBG: "238",
+		InactiveTitleFG: "245",
+		Background:      "",
+		Cursor:          "214",
+		Bracket:         "252",
+		Operator:        "39",
+		Nested:          "208",
+	}
+
+	// Miami theme
+	Miami = Theme{
+		Name:            "Miami",
+		Function:        "#ff2f91", // Pink
+		Number:          "#00d9f5", // Teal
+		Result:          "#50fa7b", // Green
+		TitleBG:         "#bd93f9", // Purple
+		TitleFG:         "#f8f8f2", // White
+		History:         "#6272a4", // Grey
+		HelpKey:         "#ffb86c", // Orange
+		HelpDesc:        "#6272a4", // Grey
+		HelpSeparator:   "#44475a", // Dark Grey
+		ActiveBorder:    "#ff2f91", // Pink
+		InactiveBorder:  "#44475a", // Dark Grey
+		ActiveTitleBG:   "#ff2f91", // Pink
+		ActiveTitleFG:   "#242424", // Dark
+		InactiveTitleBG: "#44475a", // Dark Grey
+		InactiveTitleFG: "#6272a4", // Grey
+		Background:      "#1e1e1e", // Dark Background
+		Cursor:          "#00d9f5", // Teal
+		Bracket:         "#f8f8f2", // White
+		Operator:        "#ff2f91", // Pink
+		Nested:          "#bd93f9", // Purple
+	}
+)
+
+// Themes is a list of available themes.
+var Themes = []Theme{DefaultTheme, Dracula, Nord, SolarizedDark, Miami}
 
 // EvaluatorWrapper is a high-level wrapper that coordinates between different backends.
 type EvaluatorWrapper struct {
 	scEvaluator *bridge.Evaluator
 	config      *Config
 	lastAns     string
+}
+
+var scientificConstants = map[string]string{
+	"pi":    "3.1415926535897932384626433832795028841971693993751",
+	"e":     "2.7182818284590452353602874713526624977572470936999",
+	"phi":   "1.6180339887498948482045868343656381177203091798057",
+	"light": "299792458",
+	"c":     "299792458",
+	"G":     "6.67408e-11",
+	"h":     "6.626070040e-34",
+	"h_bar": "1.054571800e-34",
+	"k":     "1.38064852e-23",
+	"sigma": "5.670367e-8",
+	"N_A":   "6.022140857e23",
+	"R":     "8.3144598",
+	"F":     "96485.33289",
+	"mu_0":  "12.566370614e-7",
+	"eps_0": "8.854187817e-12",
+	"u":     "1.660539040e-27",
+	"g":     "9.80665",
+	"au":    "149597870691",
+	"ly":    "9.4607304725808e15",
+	"pc":    "3.08567802e16",
+	"alpha": "7.2973525664e-3",
+	"m_e":   "9.10938356e-31",
+	"m_p":   "1.672621898e-27",
+	"m_n":   "1.674927471e-27",
 }
 
 // NewEvaluatorWrapper creates a new instance of EvaluatorWrapper with the provided configuration.
@@ -45,6 +226,7 @@ func NewEvaluatorWrapper(config *Config) *EvaluatorWrapper {
 
 // Evaluate takes a mathematical expression and returns the result as a string using the selected backend.
 func (e *EvaluatorWrapper) Evaluate(expr string) string {
+	expr = strings.TrimSpace(expr)
 	if e.config.Backend == BackendSpeedCrunch {
 		res, err := e.scEvaluator.EvaluateUpdateAns(expr)
 		if err != nil {
@@ -76,6 +258,16 @@ func (e *EvaluatorWrapper) GetAngleMode() byte {
 	return bridge.GetAngleMode()
 }
 
+// SetResultFormat sets the result format for the SpeedCrunch backend.
+func (e *EvaluatorWrapper) SetResultFormat(format byte) {
+	bridge.SetResultFormat(format)
+}
+
+// GetResultFormat returns the result format for the SpeedCrunch backend.
+func (e *EvaluatorWrapper) GetResultFormat() byte {
+	return bridge.GetResultFormat()
+}
+
 // GetVariable returns the value of a variable from the SpeedCrunch backend.
 func (e *EvaluatorWrapper) GetVariable(name string) (string, bool) {
 	return e.scEvaluator.GetVariable(name)
@@ -105,9 +297,20 @@ func (e *EvaluatorWrapper) GetFunctions() []FunctionInfo {
 // UserFunction represents a user-defined function.
 type UserFunction = bridge.UserFunction
 
+// Variable represents a user-defined variable.
+type Variable = bridge.Variable
+
+// Function represents a SpeedCrunch function.
+type Function = bridge.FunctionInfo
+
 // GetUserFunctions returns the list of user-defined functions from the SpeedCrunch backend.
 func (e *EvaluatorWrapper) GetUserFunctions() []UserFunction {
 	return e.scEvaluator.GetUserFunctions()
+}
+
+// GetVariables returns the list of user-defined variables from the SpeedCrunch backend.
+func (e *EvaluatorWrapper) GetVariables() []Variable {
+	return e.scEvaluator.GetVariables()
 }
 
 // SaveSession saves the current SpeedCrunch session to a file.
@@ -125,256 +328,59 @@ func (e *EvaluatorWrapper) UnsetUserFunction(name string) {
 	e.scEvaluator.UnsetUserFunction(name)
 }
 
-// evaluateGo uses cockroachdb/apd for arbitrary-precision decimal arithmetic.
+// UnsetVariable removes a user-defined variable.
+func (e *EvaluatorWrapper) UnsetVariable(name string) {
+	e.scEvaluator.UnsetVariable(name)
+}
+
+// evaluateGo uses the custom parser for high precision or complex arithmetic and nested expressions.
 func (e *EvaluatorWrapper) evaluateGo(expr string) string {
-	expr = strings.ReplaceAll(expr, " ", "")
-
-	// Handle 'ans' variable persistence
-	expr = strings.ReplaceAll(expr, "ans", e.lastAns)
-
-	// We'll use a 50-digit precision for the Go backend
-	ctx := apd.BaseContext.WithPrecision(50)
-	ctx.Traps = 0 // Disable traps to avoid panics on inexact results
-
-	// Handle simple arithmetic a+b, a-b, a*b, a/b
-	// This is still limited but uses APD.
-	if !strings.Contains(expr, "(") {
-		for _, op := range []string{"+", "-", "*", "/"} {
-			if strings.Contains(expr, op) {
-				// Check if it's a negative number at the beginning
-				if op == "-" && strings.HasPrefix(expr, "-") && !strings.Contains(expr[1:], "-") {
-					continue
-				}
-				parts := strings.Split(expr, op)
-				if len(parts) == 2 {
-					d1, _, err1 := apd.NewFromString(parts[0])
-					d2, _, err2 := apd.NewFromString(parts[1])
-					if err1 == nil && err2 == nil {
-						res := new(apd.Decimal)
-						var err error
-						switch op {
-						case "+":
-							_, err = ctx.Add(res, d1, d2)
-						case "-":
-							_, err = ctx.Sub(res, d1, d2)
-						case "*":
-							_, err = ctx.Mul(res, d1, d2)
-						case "/":
-							_, err = ctx.Quo(res, d1, d2)
-						}
-						if err == nil {
-							return res.Text('f')
-						}
-					}
-				}
-			}
-		}
+	res, err := e.parseAndEvaluate(expr)
+	if err != nil {
+		return "Error: " + err.Error()
 	}
 
-	reFunc := regexp.MustCompile(`^([a-z0-9]+)\((.*)\)$`)
-	matches := reFunc.FindStringSubmatch(expr)
-
-	if len(matches) == 3 {
-		funcName := matches[1]
-		argStr := matches[2]
-
-		// Support complex in high-precision functions if possible,
-		// but for now only use APD for real numbers.
-		if strings.ContainsAny(argStr, "ij") {
-			return e.evaluateComplexGo(expr)
-		}
-
-		d, _, err := apd.NewFromString(argStr)
-		if err == nil {
-			res := new(apd.Decimal)
-			var opErr error
-			switch funcName {
-			case "abs":
-				_, opErr = ctx.Abs(res, d)
-			case "sqrt":
-				_, opErr = ctx.Sqrt(res, d)
-			case "exp":
-				_, opErr = ctx.Exp(res, d)
-			case "ln":
-				_, opErr = ctx.Ln(res, d)
-			case "log":
-				_, opErr = ctx.Log10(res, d)
-			case "sin":
-				// Taylor series: sin(x) = x - x^3/3! + x^5/5! - ...
-				// We'll use a simple loop for small x. For larger x, argument reduction is needed.
-				// This is a basic high-precision implementation.
-				term := new(apd.Decimal).Set(d)
-				res.Set(d)
-				x2 := new(apd.Decimal)
-				ctx.Mul(x2, d, d)
-				for i := int64(3); i < 200; i += 2 {
-					ctx.Mul(term, term, x2)
-					div := new(apd.Decimal).SetInt64(i * (i - 1))
-					ctx.Quo(term, term, div)
-					term.Neg(term)
-					ctx.Add(res, res, term)
-					if term.IsZero() {
-						break
-					}
-				}
-			case "cos":
-				// Taylor series: cos(x) = 1 - x^2/2! + x^4/4! - ...
-				term := new(apd.Decimal).SetInt64(1)
-				res.SetInt64(1)
-				x2 := new(apd.Decimal)
-				ctx.Mul(x2, d, d)
-				for i := int64(2); i < 200; i += 2 {
-					ctx.Mul(term, term, x2)
-					div := new(apd.Decimal).SetInt64(i * (i - 1))
-					ctx.Quo(term, term, div)
-					term.Neg(term)
-					ctx.Add(res, res, term)
-					if term.IsZero() {
-						break
-					}
-				}
-			case "floor":
-				_, opErr = ctx.Floor(res, d)
-			case "ceil":
-				_, opErr = ctx.Ceil(res, d)
-			default:
-				// Fallback to complex for trig etc since APD doesn't have them
-				return e.evaluateComplexGo(expr)
-			}
-			if opErr == nil {
-				return res.Text('f')
-			}
-			return "Error: " + opErr.Error()
-		}
-	}
-
-	// Try parsing as a single decimal
-	d, _, err := apd.NewFromString(expr)
-	if err == nil {
-		return d.Text('f')
-	}
-
-	// Fallback to complex for everything else
-	return e.evaluateComplexGo(expr)
+	return res
 }
 
 func (e *EvaluatorWrapper) evaluateComplexGo(expr string) string {
-	// Re-implement the old math/cmplx logic here as a fallback
-	expr = strings.ReplaceAll(expr, " ", "")
-
-	// Support (3+4i)*(1-i) specifically for the test
-	if expr == "(3+4i)*(1-i)" {
-		return formatComplex((3 + 4i) * (1 - 1i))
-	}
-
-	// Handle simple cases like sin(1+2j)
-	reFunc := regexp.MustCompile(`^([a-z]+)\((.*)\)$`)
-	matches := reFunc.FindStringSubmatch(expr)
-
-	if len(matches) == 3 {
-		funcName := matches[1]
-		argStr := matches[2]
-
-		// Very basic handle for pi/4 inside functions
-		if argStr == "pi/4" {
-			argStr = fmt.Sprintf("%v", math.Pi/4)
-		}
-
-		arg, err := parseComplex(argStr)
-		if err != nil {
-			return "Error: " + err.Error()
-		}
-
-		var res complex128
-		switch funcName {
-		case "abs":
-			res = complex(cmplx.Abs(arg), 0)
-		case "sin":
-			res = cmplx.Sin(arg)
-		case "cos":
-			res = cmplx.Cos(arg)
-		case "tan":
-			res = cmplx.Tan(arg)
-		case "asin", "arcsin":
-			res = cmplx.Asin(arg)
-		case "acos", "arccos":
-			res = cmplx.Acos(arg)
-		case "atan", "arctan":
-			res = cmplx.Atan(arg)
-		case "asinh", "arsinh":
-			res = cmplx.Asinh(arg)
-		case "acosh", "arcosh":
-			res = cmplx.Acosh(arg)
-		case "atanh", "artanh":
-			res = cmplx.Atanh(arg)
-		case "exp":
-			res = cmplx.Exp(arg)
-		case "ln":
-			res = cmplx.Log(arg)
-		case "log":
-			res = cmplx.Log10(arg)
-		case "sqrt":
-			res = cmplx.Sqrt(arg)
-		case "conj":
-			res = cmplx.Conj(arg)
-		case "phase":
-			res = complex(cmplx.Phase(arg), 0)
-		case "real":
-			res = complex(real(arg), 0)
-		case "imag":
-			res = complex(imag(arg), 0)
-		case "sinh":
-			res = cmplx.Sinh(arg)
-		case "cosh":
-			res = cmplx.Cosh(arg)
-		case "tanh":
-			res = cmplx.Tanh(arg)
-		case "cot":
-			res = cmplx.Cot(arg)
-		default:
-			return "Error: unknown function " + funcName
-		}
-		return formatComplex(res)
-	}
-
-	// Handle simple arithmetic a+b
-	if strings.Contains(expr, "+") {
-		parts := strings.Split(expr, "+")
-		if len(parts) == 2 {
-			c1, err1 := parseComplex(parts[0])
-			c2, err2 := parseComplex(parts[1])
-			if err1 == nil && err2 == nil {
-				return formatComplex(c1 + c2)
-			}
-		}
-	}
-
-	// Try parsing as a single complex number
-	c, err := parseComplex(expr)
-	if err == nil {
-		return formatComplex(c)
-	}
-
-	// Handle simple arithmetic a*b
-	if strings.Contains(expr, "*") {
-		parts := strings.Split(expr, "*")
-		if len(parts) == 2 {
-			p1 := strings.Trim(parts[0], "()")
-			p2 := strings.Trim(parts[1], "()")
-			c1, err1 := parseComplex(p1)
-			c2, err2 := parseComplex(p2)
-			if err1 == nil && err2 == nil {
-				return formatComplex(c1 * c2)
-			}
-		}
-	}
-
-	return "Error: Go backend only supports basic functions like sin(x) or simple a+b for this demo"
+	return e.evaluateGo(expr)
 }
 
 func parseComplex(s string) (complex128, error) {
 	s = strings.ReplaceAll(s, "j", "i")
-	s = strings.ReplaceAll(s, "pi", fmt.Sprintf("%v", math.Pi))
+
+	// Support simple divisions like pi/2 or 1/2 in complex parser
+	if strings.Contains(s, "/") {
+		parts := strings.Split(s, "/")
+		if len(parts) == 2 {
+			p1 := strings.Trim(parts[0], "()")
+			p2 := strings.Trim(parts[1], "()")
+			v1, err1 := parseComplex(p1)
+			v2, err2 := parseComplex(p2)
+			if err1 == nil && err2 == nil {
+				if v2 == 0 {
+					return 0, fmt.Errorf("division by zero")
+				}
+				return v1 / v2, nil
+			}
+		}
+	}
+
+	// Support simple multiplications like pi*1i
+	if strings.Contains(s, "*") {
+		parts := strings.Split(s, "*")
+		if len(parts) == 2 {
+			p1 := strings.Trim(parts[0], "()")
+			p2 := strings.Trim(parts[1], "()")
+			v1, err1 := parseComplex(p1)
+			v2, err2 := parseComplex(p2)
+			if err1 == nil && err2 == nil {
+				return v1 * v2, nil
+			}
+		}
+	}
+
 	// If it's just 'i' or 'j'
 	if s == "i" {
 		return 0 + 1i, nil
@@ -391,16 +397,22 @@ func parseComplex(s string) (complex128, error) {
 	return strconv.ParseComplex(s, 128)
 }
 
-func formatComplex(c complex128) string {
+func (e *EvaluatorWrapper) formatComplex(c complex128) string {
 	r, i := real(c), imag(c)
 	if math.Abs(i) < 1e-15 {
-		return fmt.Sprintf("%.15g", r)
+		// Try to see if we can use high precision for real part if it was a simple constant
+		// but c is already float64.
+		return fmt.Sprintf("%.25g", r)
 	}
 	if math.Abs(r) < 1e-15 {
-		return fmt.Sprintf("%.15gj", i)
+		return fmt.Sprintf("%.25gj", i)
 	}
 	if i < 0 {
-		return fmt.Sprintf("%.15g - %.15gj", r, -i)
+		return fmt.Sprintf("%.25g - %.25gj", r, -i)
 	}
-	return fmt.Sprintf("%.15g + %.15gj", r, i)
+	return fmt.Sprintf("%.25g + %.25gj", r, i)
+}
+
+func (e *EvaluatorWrapper) formatDecimal(d *apd.Decimal) string {
+	return d.Text('f')
 }

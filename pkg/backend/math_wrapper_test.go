@@ -299,3 +299,89 @@ func TestHighPrecisionGo(t *testing.T) {
 		}
 	}
 }
+
+func TestScientificConstantsGo(t *testing.T) {
+	config := &Config{Backend: BackendGo}
+	evaluator := NewEvaluatorWrapper(config)
+
+	testCases := []struct {
+		expr     string
+		check    func(string) bool
+		expected string
+	}{
+		{
+			expr: "pi",
+			check: func(res string) bool {
+				return strings.HasPrefix(res, "3.14159265358979323846")
+			},
+		},
+		{
+			expr: "e",
+			check: func(res string) bool {
+				return strings.HasPrefix(res, "2.71828182845904523536")
+			},
+		},
+		{
+			expr: "light",
+			check: func(res string) bool {
+				return res == "299792458"
+			},
+		},
+		{
+			expr: "c",
+			check: func(res string) bool {
+				return res == "299792458"
+			},
+		},
+		{
+			expr: "G",
+			check: func(res string) bool {
+				return strings.HasPrefix(res, "0.0000000000667408")
+			},
+		},
+		{
+			expr: "sin(pi/2)",
+			check: func(res string) bool {
+				return strings.HasPrefix(res, "1") || strings.Contains(res, "0.999999")
+			},
+		},
+		{
+			expr: "exp(pi*1j)",
+			check: func(res string) bool {
+				// e^(i*pi) = -1
+				return strings.Contains(res, "-1") && (strings.Contains(res, "0j") || !strings.Contains(res, "j"))
+			},
+		},
+		{
+			expr: "R * 100",
+			check: func(res string) bool {
+				return strings.HasPrefix(res, "831.44598")
+			},
+		},
+		{
+			expr: "g",
+			check: func(res string) bool {
+				return res == "9.80665"
+			},
+		},
+		{
+			expr: "au",
+			check: func(res string) bool {
+				return res == "149597870691"
+			},
+		},
+		{
+			expr: "alpha",
+			check: func(res string) bool {
+				return strings.HasPrefix(res, "0.0072973525664")
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		res := evaluator.Evaluate(tc.expr)
+		if !tc.check(res) {
+			t.Errorf("Expression %s failed, got %s", tc.expr, res)
+		}
+	}
+}

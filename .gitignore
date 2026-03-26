@@ -6,7 +6,10 @@
 /turbocrunch
 /turbocrunch_test
 libbridge.a
+*.a
 *.o
+*.so
+*.dylib
 moc_*.cpp
 build/
 verify_build.go
