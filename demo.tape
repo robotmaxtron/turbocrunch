@@ -14,29 +14,24 @@ Type "./turbocrunch"
 Enter
 Sleep 1s
 
-Ctrl+N
-Sleep 1s
-Ctrl+N
-Sleep 1s
-
-Type "sin(pi/4)"
-Enter
-Sleep 1s
-Ctrl+T
-Sleep 1s
-Enter
-Sleep 1s
-Ctrl+T
-Sleep 1s
-
 Type "2 + 2 * (3 + 4)"
 Sleep 500ms
 Enter
 Sleep 1s
-Type "ans * 2"
-Sleep 500ms
+
+Ctrl+N
+Sleep 1s
+Ctrl+N
+Sleep 1s
+Ctrl+N
+Sleep 1s
+
+Ctrl+T
+Sleep 1s
+Type "sin(pi/4)"
 Enter
-Sleep 2s
+Sleep 1s
+
 
 Ctrl+C
 Sleep 1s
